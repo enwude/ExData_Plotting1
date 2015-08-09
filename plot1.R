@@ -8,6 +8,7 @@ if(!file.exists("~/Data/")){
         dir.create("~/Data/")
 }
 
+# Determine if dataset has been loaded to global environment
 if(!exists("powerSubset", envir = globalenv())){
         
         # Download and unzip the data
@@ -19,20 +20,27 @@ if(!exists("powerSubset", envir = globalenv())){
         datasetPath <- "~/data/"
         setwd(file.path(datasetPath, "ExData_Plotting1"))
         
+        # Read data to R
         powerDataset <- tbl_df(read.table(file.path(datasetPath,"household_power_consumption.txt"), header = TRUE, sep = ";", 
                                           na.strings = "?", colClasses = c("character", "character", rep("numeric",7))))
         
+        # Convert Time variable to Time class
         powerDataset$Time <- strptime(paste(powerDataset$Date, powerDataset$Time), "%d/%m/%Y %H:%M:%S")
         
+        # Convert Date variable to Date class
         powerDataset$Date <- as.Date(powerDataset$Date, "%d/%m/%Y")
         
+        # Subset relevant data
         powerSubset <- subset(powerDataset, Date == "2007-02-01" | Date == "2007-02-02")
 }
 
 
+# Launch png graphics device
 png("plot1.png", width = 500, height = 500)
 
+# Plot histogram of Global Active Power
 with(powerSubset, hist(Global_active_power, xlab = "Global Active Power (kilowatts)", ylab = "Frequency",
                        main = "Global Active Power", col = "red"))
 
-dev.off()
+# Close graphics device
+dev.off() 
